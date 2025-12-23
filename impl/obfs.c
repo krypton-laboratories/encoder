@@ -1,0 +1,83 @@
+#include "obfs.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+void gen_mapping(substitution_t *dest) {
+    for (int i = 0; i < 256; i++) {
+        dest[i] = (uint8_t)i;
+    }
+
+    for (size_t i = 0; i < 255; i++) {
+        size_t j = i + rand() / (RAND_MAX / (256 - i) + 1);
+        
+        uint8_t t = dest[j];
+        dest[j] = dest[i];
+        dest[i] = t;
+    }
+}
+
+int indexof(const substitution_t *buf, uint8_t byte) {
+    uint8_t *p = memchr(buf, byte, 256);
+    return p ? (int)(p - buf) : -1;
+}
+
+int substitute_bytes(const uint8_t *src, uint8_t *dest,
+                     const substitution_t *mapping, const size_t size, direction_t direction) {
+    if (direction == FORWARD) {
+        for (size_t i = 0; i < size; i++) {
+            dest[i] = mapping[src[i]];
+        }
+    } else {
+        for (size_t i = 0; i < size; i++) {
+            dest[i] = indexof(mapping, src[i]);
+        }
+    }
+    return 0;
+}
+
+static inline unsigned int modinv(unsigned int a, unsigned int n) {
+    unsigned int t = 0, newT = 1;
+    unsigned int r = n, newR = a;
+
+    while (newR != 0) {
+        unsigned int quotient = r / newR;
+        t = newT;
+        newT = t - quotient * newT;
+
+        r = newR;
+        newR = r - quotient * newR;
+
+    }
+
+    if (r != 1) {
+        return -1;
+    }
+    return t % n;
+}
+
+int permute_bytes(const uint8_t *src, uint8_t *dest,
+                  const permutation_t key, const size_t size, direction_t direction) {
+    unsigned int n = (unsigned int) size;
+    unsigned int a = ((unsigned long long)key * 2 + 1) % n;
+    if (a == 0) a = 1;
+    unsigned int b = a % ((unsigned int) size);
+    if (direction == FORWARD) {
+        memcpy(dest, src, size);
+
+        for (unsigned int i = 0; i < n; i++) {
+            unsigned int j = ((unsigned long long)a * i + b) % n; 
+            dest[j] = src[i];
+        }
+    } else {
+        unsigned int a_inv = modinv(a, n);
+
+        for (unsigned int j = 0; j < n; j++) {
+            unsigned int i = (a_inv * (j - b)) % n;
+            dest[i] = src[j];
+        }
+    }
+
+    return 0; 
+}
+

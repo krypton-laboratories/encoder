@@ -1,0 +1,42 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iinclude",
+      "-g",
+      "-O0",
+      "-fsanitize=address,undefined",
+      "-c",
+      "-o",
+      "main.o",
+      "main.c"
+    ],
+    "directory": "/home/theavgeekbee/projects/kryptographer/encoder",
+    "file": "/home/theavgeekbee/projects/kryptographer/encoder/main.c",
+    "output": "/home/theavgeekbee/projects/kryptographer/encoder/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iinclude",
+      "-g",
+      "-O0",
+      "-fsanitize=address,undefined",
+      "-c",
+      "-o",
+      "impl/obfs.o",
+      "impl/obfs.c"
+    ],
+    "directory": "/home/theavgeekbee/projects/kryptographer/encoder",
+    "file": "/home/theavgeekbee/projects/kryptographer/encoder/impl/obfs.c",
+    "output": "/home/theavgeekbee/projects/kryptographer/encoder/impl/obfs.o"
+  }
+]
