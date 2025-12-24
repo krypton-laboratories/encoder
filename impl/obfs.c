@@ -17,13 +17,18 @@ void gen_mapping(substitution_t *dest) {
     }
 }
 
-int indexof(const substitution_t *buf, uint8_t byte) {
-    uint8_t *p = memchr(buf, byte, 256);
-    return p ? (int)(p - buf) : -1;
+static inline int indexof(const substitution_t *buf, uint8_t byte) {
+    for (int i = 0; i < 256; i++) {
+        if (buf[i] == byte) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 int substitute_bytes(const uint8_t *src, uint8_t *dest,
-                     const substitution_t *mapping, const size_t size, direction_t direction) {
+                     const substitution_t *mapping, const size_t size,
+                     direction_t direction) {
     if (direction == FORWARD) {
         for (size_t i = 0; i < size; i++) {
             dest[i] = mapping[src[i]];
@@ -42,11 +47,12 @@ static inline unsigned int modinv(unsigned int a, unsigned int n) {
 
     while (newR != 0) {
         unsigned int quotient = r / newR;
+        unsigned int oldT = t, oldR = r;
         t = newT;
-        newT = t - quotient * newT;
+        newT = oldT - quotient * newT;
 
         r = newR;
-        newR = r - quotient * newR;
+        newR = oldR - quotient * newR;
 
     }
 
@@ -57,14 +63,13 @@ static inline unsigned int modinv(unsigned int a, unsigned int n) {
 }
 
 int permute_bytes(const uint8_t *src, uint8_t *dest,
-                  const permutation_t key, const size_t size, direction_t direction) {
+                  const permutation_t key, const size_t size,
+                  direction_t direction) {
     unsigned int n = (unsigned int) size;
     unsigned int a = ((unsigned long long)key * 2 + 1) % n;
     if (a == 0) a = 1;
-    unsigned int b = a % ((unsigned int) size);
+    unsigned int b = key % n;
     if (direction == FORWARD) {
-        memcpy(dest, src, size);
-
         for (unsigned int i = 0; i < n; i++) {
             unsigned int j = ((unsigned long long)a * i + b) % n; 
             dest[j] = src[i];
@@ -73,7 +78,7 @@ int permute_bytes(const uint8_t *src, uint8_t *dest,
         unsigned int a_inv = modinv(a, n);
 
         for (unsigned int j = 0; j < n; j++) {
-            unsigned int i = (a_inv * (j - b)) % n;
+            unsigned int i = (a_inv * ((j + n - b) % n)) % n;
             dest[i] = src[j];
         }
     }
@@ -81,3 +86,19 @@ int permute_bytes(const uint8_t *src, uint8_t *dest,
     return 0; 
 }
 
+int apply(const uint8_t *src, uint8_t *dest, const size_t size,
+          const substitution_t *substitution, const permutation_t *permutation,
+          direction_t direction) {
+    uint8_t *temp = malloc(sizeof(uint8_t) * size);
+
+    if (direction == FORWARD) {
+        substitute_bytes(src, temp, substitution, size, direction);
+        permute_bytes(temp, dest, *permutation, size, direction);
+    } else {
+        permute_bytes(src, temp, *permutation, size, direction);
+        substitute_bytes(temp, dest, substitution, size, direction);
+    }
+
+    free(temp);
+    return 0;
+}

@@ -32,7 +32,7 @@ int apply(
   const uint8_t *src,
   uint8_t *dest,
   const size_t size,
-  const substitution_t substitution,
-  const permutation_t permutation,
+  const substitution_t *substitution,
+  const permutation_t *permutation,
   direction_t direction
 );
