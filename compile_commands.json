@@ -2,41 +2,49 @@
   {
     "arguments": [
       "/usr/bin/clang",
-      "-std=c11",
       "-Wall",
       "-Wextra",
-      "-Wpedantic",
       "-Iinclude",
       "-g",
-      "-O0",
-      "-fsanitize=address,undefined",
       "-c",
       "-o",
-      "main.o",
-      "main.c"
+      "obj/config.o",
+      "impl/config.c"
     ],
     "directory": "/home/theavgeekbee/projects/kryptographer/encoder",
-    "file": "/home/theavgeekbee/projects/kryptographer/encoder/main.c",
-    "output": "/home/theavgeekbee/projects/kryptographer/encoder/main.o"
+    "file": "/home/theavgeekbee/projects/kryptographer/encoder/impl/config.c",
+    "output": "/home/theavgeekbee/projects/kryptographer/encoder/obj/config.o"
   },
   {
     "arguments": [
       "/usr/bin/clang",
-      "-std=c11",
       "-Wall",
       "-Wextra",
-      "-Wpedantic",
       "-Iinclude",
       "-g",
-      "-O0",
-      "-fsanitize=address,undefined",
       "-c",
       "-o",
-      "impl/obfs.o",
+      "obj/obfs.o",
       "impl/obfs.c"
     ],
     "directory": "/home/theavgeekbee/projects/kryptographer/encoder",
     "file": "/home/theavgeekbee/projects/kryptographer/encoder/impl/obfs.c",
-    "output": "/home/theavgeekbee/projects/kryptographer/encoder/impl/obfs.o"
+    "output": "/home/theavgeekbee/projects/kryptographer/encoder/obj/obfs.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-g",
+      "-c",
+      "-o",
+      "obj/main.o",
+      "main.c"
+    ],
+    "directory": "/home/theavgeekbee/projects/kryptographer/encoder",
+    "file": "/home/theavgeekbee/projects/kryptographer/encoder/main.c",
+    "output": "/home/theavgeekbee/projects/kryptographer/encoder/obj/main.o"
   }
 ]

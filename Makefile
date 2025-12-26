@@ -1,37 +1,39 @@
-CC      := clang
-TARGET  := app
+# Compiler
+CC = clang
+CFLAGS = -Wall -Wextra -Iinclude -g
 
-SRC     := main.c impl/obfs.c
-OBJ     := $(SRC:.c=.o)
+# Directories
+SRC_DIR = impl
+INCLUDE_DIR = include
+OBJ_DIR = obj
+BIN = main
 
-INC_DIR := include
+# Sources and objects
+SRCS = $(wildcard $(SRC_DIR)/*.c) main.c
+OBJS = $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRCS)))
 
-# Common flags
-CFLAGS_COMMON := -std=c11 -Wall -Wextra -Wpedantic -I$(INC_DIR)
+# Default target
+all: $(BIN)
 
-# Profiles
-CFLAGS_DEV     := -g -O0 -fsanitize=address,undefined
-CFLAGS_RELEASE := -O3 -DNDEBUG
+# Link object files to create executable
+$(BIN): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
 
-# Default profile
-CFLAGS := $(CFLAGS_COMMON) $(CFLAGS_DEV)
-
-.PHONY: all dev release clean
-
-all: dev
-
-dev: CFLAGS := $(CFLAGS_COMMON) $(CFLAGS_DEV)
-dev: $(TARGET)
-
-release: CFLAGS := $(CFLAGS_COMMON) $(CFLAGS_RELEASE)
-release: $(TARGET)
-
-$(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) $^ -o $@
-
-%.o: %.c
+# Compile source files to object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# Special case for main.c in root
+$(OBJ_DIR)/main.o: main.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Create object directory if it doesn't exist
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+
+# Clean
 clean:
-	rm -f $(OBJ) $(TARGET)
+	rm -rf $(OBJ_DIR) $(BIN)
+
+.PHONY: all clean
 
