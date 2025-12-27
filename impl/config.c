@@ -37,6 +37,10 @@ int read_config(FILE *file, config_t *config) {
             config->accept_threshold = atoi(value);
         } else if (strcmp(key, "url") == 0) {
             strlcpy(config->url, value, sizeof(config->url));
+        } else if (strcmp(key, "test_port") == 0) {
+            config->test_port = atoi(value);
+        } else if (strcmp(key, "payload_tests") == 0) {
+            config->payload_tests = atoi(value);
         }
     }
 

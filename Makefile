@@ -1,6 +1,6 @@
 # Compiler
 CC = clang
-CFLAGS = -Wall -Wextra -Iinclude -g
+CFLAGS = -Wall -Wextra -Iinclude -lm -g
 
 # Directories
 SRC_DIR = impl
