@@ -1,6 +1,6 @@
 # Compiler
 CC = clang
-CFLAGS = -Wall -Wextra -Iinclude -lm -g
+CFLAGS = -Wall -Wextra -Iinclude -g
 
 # Directories
 SRC_DIR = impl
@@ -17,7 +17,7 @@ all: $(BIN)
 
 # Link object files to create executable
 $(BIN): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -lm
 
 # Compile source files to object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)

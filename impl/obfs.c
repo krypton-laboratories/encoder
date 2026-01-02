@@ -65,8 +65,8 @@ static inline unsigned int modinv(unsigned int a, unsigned int n) {
 int permute_bytes(const uint8_t *src, uint8_t *dest,
                   const permutation_t key, const size_t size,
                   direction_t direction) {
-    unsigned int n = (unsigned int) size;
-    unsigned int a = ((unsigned long long)key * 2 + 1) % n;
+    unsigned int n = size;
+    unsigned int a = (key * 2 + 1) % n;
     if (a == 0) a = 1;
     unsigned int b = key % n;
     if (direction == FORWARD) {

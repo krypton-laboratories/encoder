@@ -181,10 +181,12 @@ int main(void) {
 
     int best_idx = 0;
 
-    for (int i = 1; i <= 100; i++) {
+    for (int i = 1; i <= 10; i++) {
         size_t size = sizeof(char) * rng(5, 1480);
         char *payload = malloc(size);
         generate_payload(payload, size);
+        //size_t size = 5;
+        //char *payload = "apple";
 
         scored_candidate_t scores[64];
         double sum = 0;
@@ -210,13 +212,20 @@ int main(void) {
             mutate(scores[j].candidate.substitution, scores[j].candidate.perm);
         }
 
-        printf("generation %d avg score: %.4f best score %.4f\n", i, sum, best);
+        printf("generation %d avg score: %.4f best score %.4f\n", i, sum/64, best);
         fflush(stdout);
 
         free(payload);
     }
 
     printf("the best idx is %d", best_idx);
+
+    FILE *out_f = fopen("/etc/kryptographer/maps", "w");
+    for (int i = 0; i < 256; i++) {
+        fprintf(out_f, "%d ", (int) candidates[best_idx].substitution[i]);
+    }
+    fprintf(out_f, "%d", *candidates[best_idx].perm);
+    fclose(out_f);
 
     for (int i = 0; i < 64; i++) {
         free(candidates[i].substitution);
