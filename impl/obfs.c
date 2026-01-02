@@ -59,6 +59,9 @@ static inline unsigned int modinv(unsigned int a, unsigned int n) {
     if (r != 1) {
         return -1;
     }
+    if (t < 0) {
+        t += n;
+    }
     return t % n;
 }
 
