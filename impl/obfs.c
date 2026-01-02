@@ -42,12 +42,12 @@ int substitute_bytes(const uint8_t *src, uint8_t *dest,
 }
 
 static inline unsigned int modinv(unsigned int a, unsigned int n) {
-    unsigned int t = 0, newT = 1;
-    unsigned int r = n, newR = a;
+    long t = 0, newT = 1;
+    long r = n, newR = a;
 
     while (newR != 0) {
-        unsigned int quotient = r / newR;
-        unsigned int oldT = t, oldR = r;
+        long quotient = r / newR;
+        long oldT = t, oldR = r;
         t = newT;
         newT = oldT - quotient * newT;
 
