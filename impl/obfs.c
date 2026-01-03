@@ -41,49 +41,40 @@ int substitute_bytes(const uint8_t *src, uint8_t *dest,
     return 0;
 }
 
-static inline unsigned int modinv(unsigned int a, unsigned int n) {
-    long t = 0, newT = 1;
-    long r = n, newR = a;
-
-    while (newR != 0) {
-        long quotient = r / newR;
-        long oldT = t, oldR = r;
-        t = newT;
-        newT = oldT - quotient * newT;
-
-        r = newR;
-        newR = oldR - quotient * newR;
-
-    }
-
-    if (r != 1) {
-        return -1;
-    }
-    if (t < 0) {
-        t += n;
-    }
-    return t % n;
+static inline uint32_t xorshift32(uint32_t *state) {
+    uint32_t x = *state;
+    x ^= x << 13;
+    x ^= x >> 17;
+    x ^= x << 5;
+    *state = x;
+    return x;
 }
 
 int permute_bytes(const uint8_t *src, uint8_t *dest,
                   const permutation_t key, const size_t size,
                   direction_t direction) {
-    unsigned int n = size;
-    unsigned int a = (key * 2 + 1) % n;
-    if (a == 0) a = 1;
-    unsigned int b = key % n;
+    memcpy(dest, src, size);
+    permutation_t rng = key;
     if (direction == FORWARD) {
-        for (unsigned int i = 0; i < n; i++) {
-            unsigned int j = ((unsigned long long)a * i + b) % n; 
-            dest[j] = src[i];
+        for (unsigned int i = size - 1; i > 0; i--) {
+            unsigned int j = xorshift32(&rng) % (i + 1); 
+            int tmp = dest[i];
+            dest[i] = dest[j];
+            dest[j] = tmp;
         }
     } else {
-        unsigned int a_inv = modinv(a, n);
-
-        for (unsigned int j = 0; j < n; j++) {
-            unsigned int i = (a_inv * ((j + n - b) % n)) % n;
-            dest[i] = src[j];
+        uint32_t *swap_store = malloc(sizeof(uint32_t) * size);
+        for (size_t i = size - 1; i > 0; i--) {
+            swap_store[size - 1 - i] = xorshift32(&rng) % (i + 1);
         }
+        for (size_t i = 1; i < size; i++) {
+            size_t j = swap_store[i - 1];
+            int tmp = dest[i];
+            dest[i] = dest[j];
+            dest[j] = tmp;
+        }
+
+        free(swap_store);
     }
 
     return 0; 
